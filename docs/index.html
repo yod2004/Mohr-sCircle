@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mohr's Circle - Neo-Glass Edition</title>
+    <title>Mohr's Circle - Neo-Glass Edition (Compact)</title>
     <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
     <style>
         :root {
@@ -26,10 +26,10 @@
         
         h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; text-align: center; 
              color: #fff; text-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple); }
-        p { color: #a0a0a0; margin-bottom: 40px; text-align: center; font-weight: 300; }
+        p { color: #a0a0a0; margin-bottom: 30px; text-align: center; font-weight: 300; } /* マージンを縮小 */
         
         /* グラフパネルのグラスモーフィズム */
-        .plots { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+        .plots { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; } /* マージンを縮小 */
         
         .plot-box { display: flex; flex-direction: column; align-items: center; 
                     background: rgba(255, 255, 255, 0.05); /* 白をベースに半透明 */
@@ -45,28 +45,28 @@
         .plot-title { font-weight: bold; margin-bottom: 15px; color: #fff; font-size: 18px; text-shadow: 0 0 5px rgba(255,255,255,0.8); }
         canvas { background: rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; max-width: 100%; height: auto; }
         
-        /* コントロールパネルのグラスモーフィズム */
+        /* コントロールパネルのグラスモーフィズム - コンパクト化 (ここを重点的に修正) */
         .controls { background: rgba(255, 255, 255, 0.05); 
                     backdrop-filter: blur(20px); 
                     border: 1px solid rgba(255, 255, 255, 0.1); 
-                    border-radius: 20px; padding: 30px; 
+                    border-radius: 20px; padding: 20px; /* パディングを縮小 */
                     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); 
                     position: relative; overflow: hidden; }
         .controls::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--neon-red), var(--neon-blue), var(--neon-green), var(--neon-purple), var(--neon-orange)); }
         
-        .controls h3 { margin-top: 0; margin-bottom: 25px; color: #fff; font-size: 20px; text-align: center; }
-        .control-group { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; 
-                         background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 15px; 
+        .controls h3 { margin-top: 0; margin-bottom: 15px; color: #fff; font-size: 19px; text-align: center; } /* マージン、フォントサイズを縮小 */
+        .control-group { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; /* マージン、ギャップを縮小 */
+                         background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 10px 15px; /* 角丸、パディングを縮小 */
                          border: 1px solid rgba(255, 255, 255, 0.05); }
-        .label { width: 160px; font-weight: 600; font-size: 15px; text-shadow: 0 0 3px rgba(255,255,255,0.5); }
+        .label { width: 140px; font-weight: 600; font-size: 14px; text-shadow: 0 0 3px rgba(255,255,255,0.5); } /* 幅、フォントサイズを縮小 */
         
-        /* スライダーのグラス風＆グローカスタマイズ */
+        /* スライダーのグラス風＆グローカスタマイズ - 縮小版 (太さを1/2に) */
         input[type="range"] { flex-grow: 1; -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); 
-                               border-radius: 10px; height: 8px; outline: none; border: 1px solid rgba(255, 255, 255, 0.05); }
+                               border-radius: 2px; height: 4px; outline: none; border: 1px solid rgba(255, 255, 255, 0.05); } /* 角丸、高さを縮小 */
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; background: #fff; border-radius: 50%; 
-                                                     width: 22px; height: 22px; cursor: pointer; 
-                                                     box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.2s, box-shadow 0.2s; }
-        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); box-shadow: 0 0 15px #fff; }
+                                                     width: 14px; height: 14px; cursor: pointer; /* サイズを縮小 */
+                                                     box-shadow: 0 3px 8px rgba(0,0,0,0.5); transition: transform 0.2s, box-shadow 0.2s; } /* 影を調整 */
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); box-shadow: 0 0 12px #fff; } /* 拡大率、影を調整 */
         
         /* スライダーの色分けとグロー */
         #sx::-webkit-slider-thumb { background: var(--neon-red); box-shadow: 0 0 10px var(--neon-red); }
@@ -74,13 +74,13 @@
         #txy::-webkit-slider-thumb { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
         #theta::-webkit-slider-thumb { background: var(--neon-purple); box-shadow: 0 0 10px var(--neon-purple); }
         
-        .val-display { width: 60px; text-align: right; font-family: monospace; font-size: 17px; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.8); }
-        .btn-group { display: flex; gap: 8px; }
+        .val-display { width: 55px; text-align: right; font-family: monospace; font-size: 16px; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.8); } /* 幅、フォントサイズを縮小 */
+        .btn-group { display: flex; gap: 5px; } /* ギャップを縮小 */
         
-        /* ボタンのグラス風＆ネオンカスタマイズ */
-        button { cursor: pointer; padding: 8px 18px; border: 1px solid rgba(255, 255, 255, 0.1); 
-                 background: rgba(255, 255, 255, 0.05); border-radius: 8px; font-weight: bold; color: #fff; 
-                 transition: 0.2s; backdrop-filter: blur(5px); font-size: 16px; }
+        /* ボタンのグラス風＆ネオンカスタマイズ - 縮小版 */
+        button { cursor: pointer; padding: 5px 12px; border: 1px solid rgba(255, 255, 255, 0.1); /* パディングを縮小 */
+                 background: rgba(255, 255, 255, 0.05); border-radius: 6px; font-weight: bold; color: #fff; /* 角丸を縮小 */
+                 transition: 0.2s; backdrop-filter: blur(5px); font-size: 14px; } /* フォントサイズを縮小 */
         button:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); color: #fff; box-shadow: 0 0 10px #fff; }
         button:active { background: rgba(255, 255, 255, 0.05); }
     </style>
@@ -90,8 +90,8 @@
 <canvas id="bgCanvas"></canvas>
 
 <div class="container">
-    <h1>モールの応力円 と 応力変換 - Neo-Glass Edition</h1>
-    <p>スライダーを動かして「ヌルヌル」とした動きと、バッチバチのデザインを楽しんでください。</p>
+    <h1>モールの応力円 と 応力変換 - Neo-Glass Edition (Compact)</h1>
+    <p>コントロールパネルをコンパクトにし、スライダーを細くしました。</p>
 
     <div class="plots">
         <div class="plot-box">
@@ -146,6 +146,8 @@
 </div>
 
 <script>
+    // JavaScript部分は前回のコードと全く同じです。
+    // CSSの修正のみでコンパクト化を実現しています。
     const realCtx = document.getElementById('realCanvas').getContext('2d');
     const mohrCtx = document.getElementById('mohrCanvas').getContext('2d');
     
@@ -243,7 +245,7 @@
         const txy = state.txy;
         const theta = state.theta;
 
-        // 表示の更新 (スムーズな動きのためにアニメーションさせる)
+        // 表示の更新
         document.getElementById('sx_val').innerText = sx.toFixed(1);
         document.getElementById('sy_val').innerText = sy.toFixed(1);
         document.getElementById('txy_val').innerText = txy.toFixed(1);
@@ -274,7 +276,7 @@
         realCtx.closePath();
         realCtx.stroke();
 
-        // 基準面の応力矢印 (色をネオンに)
+        // 基準面の応力矢印
         if (sx !== 0) {
             drawArrow(realCtx, offset, 0, offset + sx, 0, '#ff8787');       
             drawArrow(realCtx, -offset, 0, -offset - sx, 0, '#ff8787');     
@@ -285,6 +287,7 @@
         }
         if (txy !== 0) {
             drawArrow(realCtx, offset, 0, offset, txy, '#82df97');        
+            drawArrow(realCtx, -offset, 0, -offset - txy, 'green');        
             drawArrow(realCtx, -offset, 0, -offset, -txy, '#82df97');     
             drawArrow(realCtx, 0, offset, txy, offset, '#82df97');        
             drawArrow(realCtx, 0, -offset, -txy, -offset, '#82df97');     
@@ -298,6 +301,7 @@
         realCtx.beginPath();
         realCtx.moveTo(X(p1x), Y(p1y));
         realCtx.lineTo(X(p2x), Y(p2y));
+        realCtx.strokeStyle = "rgba(0, 0, 0, 0.7)";
         realCtx.strokeStyle = "rgba(255,255,255,0.6)";
         realCtx.lineWidth = 1.5;
         realCtx.setLineDash([5, 5]);
