@@ -3,74 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>モールの応力円インタラクティブ</title>
+    <title>Mohr's Circle App</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f4f4f9; color: #333; }
-        h2 { margin-top: 20px; }
-        .canvas-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
-        canvas { background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .controls { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .control-group { display: flex; align-items: center; justify-content: center; gap: 10px; background: white; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .control-group label { width: 140px; text-align: right; font-weight: bold; }
-        input[type="range"] { width: 250px; cursor: pointer; }
-        .val-display { width: 50px; text-align: left; font-family: monospace; font-size: 16px; }
-        button { cursor: pointer; padding: 5px 15px; border: 1px solid #bbb; background: #eee; border-radius: 4px; font-weight: bold; font-size: 16px; user-select: none; }
-        button:hover { background: #ddd; }
-        button:active { background: #ccc; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #ffffff; color: #31333F; margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
+        p { color: #555; margin-bottom: 20px; }
+        .plots { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+        .plot-box { display: flex; flex-direction: column; align-items: center; }
+        .plot-title { font-weight: bold; margin-bottom: 10px; color: #333; }
+        canvas { background: #fff; border: 1px solid #e6e6e6; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .controls { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e6e6e6; }
+        .controls h3 { margin-top: 0; margin-bottom: 15px; }
+        .control-group { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; }
+        .label { width: 160px; font-weight: 600; font-size: 15px; }
+        input[type="range"] { flex-grow: 1; cursor: pointer; }
+        .val-display { width: 60px; text-align: right; font-family: monospace; font-size: 16px; }
+        .btn-group { display: flex; gap: 5px; }
+        button { cursor: pointer; padding: 4px 12px; border: 1px solid #dcdcdc; background: #fff; border-radius: 4px; font-weight: bold; transition: 0.2s; }
+        button:hover { border-color: #ff4b4b; color: #ff4b4b; }
+        button:active { background: #f0f0f0; }
     </style>
 </head>
 <body>
 
-    <h2>実空間の応力状態とモールの応力円</h2>
+<div class="container">
+    <h1>モールの応力円と応力状態の変換</h1>
+    <p>スライダーを動かすか、横の「＜」「＞」ボタンで数値を調整してみてください。</p>
 
-    <div class="canvas-container">
-        <canvas id="realCanvas" width="400" height="400"></canvas>
-        <canvas id="mohrCanvas" width="400" height="400"></canvas>
+    <div class="plots">
+        <div class="plot-box">
+            <div class="plot-title">Real World Stress State & Rotated Plane</div>
+            <canvas id="realCanvas" width="500" height="500"></canvas>
+        </div>
+        <div class="plot-box">
+            <div class="plot-title">Mohr's Circle & Rotated State</div>
+            <canvas id="mohrCanvas" width="500" height="500"></canvas>
+        </div>
     </div>
 
     <div class="controls">
+        <h3>パラメータ設定</h3>
         <div class="control-group">
-            <label style="color: red;">σx (Sigma X):</label>
+            <div class="label" style="color: red;">σx (Sigma X)</div>
             <input type="range" id="sx" min="-100" max="100" step="0.1" value="80">
-            <span class="val-display" id="sx_val">80.0</span>
-            <button onclick="stepVal('sx', -1)">＜</button>
-            <button onclick="stepVal('sx', 1)">＞</button>
+            <div class="val-display" id="sx_val">80.0</div>
+            <div class="btn-group">
+                <button onclick="stepVal('sx', -1)">＜</button>
+                <button onclick="stepVal('sx', 1)">＞</button>
+            </div>
         </div>
         <div class="control-group">
-            <label style="color: blue;">σy (Sigma Y):</label>
+            <div class="label" style="color: blue;">σy (Sigma Y)</div>
             <input type="range" id="sy" min="-100" max="100" step="0.1" value="20">
-            <span class="val-display" id="sy_val">20.0</span>
-            <button onclick="stepVal('sy', -1)">＜</button>
-            <button onclick="stepVal('sy', 1)">＞</button>
+            <div class="val-display" id="sy_val">20.0</div>
+            <div class="btn-group">
+                <button onclick="stepVal('sy', -1)">＜</button>
+                <button onclick="stepVal('sy', 1)">＞</button>
+            </div>
         </div>
         <div class="control-group">
-            <label style="color: green;">τxy (Tau XY):</label>
+            <div class="label" style="color: green;">τxy (Tau XY)</div>
             <input type="range" id="txy" min="-100" max="100" step="0.1" value="30">
-            <span class="val-display" id="txy_val">30.0</span>
-            <button onclick="stepVal('txy', -1)">＜</button>
-            <button onclick="stepVal('txy', 1)">＞</button>
+            <div class="val-display" id="txy_val">30.0</div>
+            <div class="btn-group">
+                <button onclick="stepVal('txy', -1)">＜</button>
+                <button onclick="stepVal('txy', 1)">＞</button>
+            </div>
         </div>
         <div class="control-group">
-            <label style="color: purple;">θ (Rotation):</label>
+            <div class="label" style="color: purple;">θ (Rotation Angle)</div>
             <input type="range" id="theta" min="-90" max="90" step="0.1" value="30">
-            <span class="val-display" id="theta_val">30.0</span>
-            <button onclick="stepVal('theta', -1)">＜</button>
-            <button onclick="stepVal('theta', 1)">＞</button>
+            <div class="val-display" id="theta_val">30.0</div>
+            <div class="btn-group">
+                <button onclick="stepVal('theta', -1)">＜</button>
+                <button onclick="stepVal('theta', 1)">＞</button>
+            </div>
         </div>
     </div>
+</div>
 
 <script>
     const realCtx = document.getElementById('realCanvas').getContext('2d');
     const mohrCtx = document.getElementById('mohrCanvas').getContext('2d');
-    const w = 400; const h = 400; const cx = w / 2; const cy = h / 2;
+    
+    // Matplotlibの set_xlim(-180, 180) と同等のスケール設定
+    const w = 500, h = 500;
+    const lim = 180;
+    const scale = w / (lim * 2); 
+    const cx = w / 2, cy = h / 2;
 
-    // キャンバス用の座標変換 (Y軸を上向きに)
-    function X(x) { return cx + x; }
-    function Y(y) { return cy - y; }
+    function X(x) { return cx + x * scale; }
+    function Y(y) { return cy - y * scale; } // CanvasはY軸が下向きなので反転
 
-    // 矢印を描画する関数
+    // 矢印を描画する関数 (Matplotlibの FancyArrowPatch を再現)
     function drawArrow(ctx, fromX, fromY, toX, toY, color, width = 2) {
         if (Math.abs(fromX - toX) < 0.1 && Math.abs(fromY - toY) < 0.1) return;
+        const headlen = 15; // 矢印の頭のサイズ
+        const angle = Math.atan2(Y(toY) - Y(fromY), X(toX) - X(fromX));
+        
         ctx.beginPath();
         ctx.moveTo(X(fromX), Y(fromY));
         ctx.lineTo(X(toX), Y(toY));
@@ -78,8 +109,6 @@
         ctx.lineWidth = width;
         ctx.stroke();
 
-        const angle = Math.atan2(Y(toY) - Y(fromY), X(toX) - X(fromX));
-        const headlen = 12;
         ctx.beginPath();
         ctx.moveTo(X(toX), Y(toY));
         ctx.lineTo(X(toX) - headlen * Math.cos(angle - Math.PI / 6), Y(toY) - headlen * Math.sin(angle - Math.PI / 6));
@@ -89,18 +118,30 @@
         ctx.fill();
     }
 
-    // 共通のグリッド描画
-    function drawGrid(ctx) {
+    // グリッド線と座標軸の描画
+    function drawGrid(ctx, labelX, labelY) {
         ctx.clearRect(0, 0, w, h);
-        ctx.strokeStyle = "#eee";
         ctx.lineWidth = 1;
-        for (let i = -200; i <= 200; i += 20) {
-            ctx.beginPath(); ctx.moveTo(X(i), Y(-200)); ctx.lineTo(X(i), Y(200)); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(X(-200), Y(i)); ctx.lineTo(X(200), Y(i)); ctx.stroke();
+        
+        // 破線のグリッド
+        ctx.strokeStyle = "rgba(0,0,0,0.1)";
+        ctx.setLineDash([5, 5]);
+        for (let i = -150; i <= 150; i += 50) {
+            ctx.beginPath(); ctx.moveTo(X(i), Y(-180)); ctx.lineTo(X(i), Y(180)); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(X(-180), Y(i)); ctx.lineTo(X(180), Y(i)); ctx.stroke();
         }
-        ctx.strokeStyle = "#000";
-        ctx.beginPath(); ctx.moveTo(X(-200), Y(0)); ctx.lineTo(X(200), Y(0)); ctx.stroke(); // X軸
-        ctx.beginPath(); ctx.moveTo(X(0), Y(-200)); ctx.lineTo(X(0), Y(200)); ctx.stroke(); // Y軸
+        ctx.setLineDash([]);
+
+        // 実線のX軸・Y軸
+        ctx.strokeStyle = "rgba(0,0,0,0.5)";
+        ctx.beginPath(); ctx.moveTo(X(-180), Y(0)); ctx.lineTo(X(180), Y(0)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(X(0), Y(-180)); ctx.lineTo(X(0), Y(180)); ctx.stroke();
+
+        // 軸ラベル
+        ctx.fillStyle = "#000";
+        ctx.font = "italic 16px serif";
+        ctx.fillText(labelX, X(160), Y(0) - 10);
+        ctx.fillText(labelY, X(0) + 10, Y(165));
     }
 
     function update() {
@@ -109,52 +150,54 @@
         const txy = parseFloat(document.getElementById('txy').value);
         const theta = parseFloat(document.getElementById('theta').value);
 
-        // 数値表示の更新
+        // 表示の更新
         document.getElementById('sx_val').innerText = sx.toFixed(1);
         document.getElementById('sy_val').innerText = sy.toFixed(1);
         document.getElementById('txy_val').innerText = txy.toFixed(1);
         document.getElementById('theta_val').innerText = theta.toFixed(1);
 
+        // 計算ロジック (Pythonと完全同一)
         const theta_rad = theta * Math.PI / 180;
         const center_x = (sx + sy) / 2;
         const radius = Math.sqrt(Math.pow((sx - sy) / 2, 2) + Math.pow(txy, 2));
-
         const s_theta = center_x + ((sx - sy) / 2) * Math.cos(2 * theta_rad) + txy * Math.sin(2 * theta_rad);
         const t_theta = -((sx - sy) / 2) * Math.sin(2 * theta_rad) + txy * Math.cos(2 * theta_rad);
 
         // ============================
-        // 実空間の描画
+        // 1. 実空間の描画
         // ============================
-        drawGrid(realCtx);
+        drawGrid(realCtx, "X", "Y");
         const rectSize = 80;
         const offset = rectSize / 2;
-        const arrowOffset = 10;
 
-        // 四角形
+        // 微小要素の四角形
         realCtx.strokeStyle = "black";
         realCtx.lineWidth = 2;
-        realCtx.strokeRect(X(-offset), Y(offset), rectSize, rectSize);
+        realCtx.beginPath();
+        realCtx.moveTo(X(-offset), Y(offset));
+        realCtx.lineTo(X(offset), Y(offset));
+        realCtx.lineTo(X(offset), Y(-offset));
+        realCtx.lineTo(X(-offset), Y(-offset));
+        realCtx.closePath();
+        realCtx.stroke();
 
-        // 面的応力の矢印
+        // 基準面の応力矢印 (物理法則に合わせて両面に描画)
         if (sx !== 0) {
-            const dir = sx > 0 ? 1 : -1;
-            const pos = offset + arrowOffset;
-            drawArrow(realCtx, pos * dir, 0, (pos + Math.abs(sx)) * dir, 0, 'red'); // 右・左
+            drawArrow(realCtx, offset, 0, offset + sx, 0, 'red');       // 右面
+            drawArrow(realCtx, -offset, 0, -offset - sx, 0, 'red');     // 左面
         }
         if (sy !== 0) {
-            const dir = sy > 0 ? 1 : -1;
-            const pos = offset + arrowOffset;
-            drawArrow(realCtx, 0, pos * dir, 0, (pos + Math.abs(sy)) * dir, 'blue'); // 上・下
+            drawArrow(realCtx, 0, offset, 0, offset + sy, 'blue');      // 上面
+            drawArrow(realCtx, 0, -offset, 0, -offset - sy, 'blue');    // 下面
         }
         if (txy !== 0) {
-            const dir = txy > 0 ? 1 : -1;
-            drawArrow(realCtx, offset, 0, offset, txy * dir, 'green'); // 右
-            drawArrow(realCtx, -offset, 0, -offset, -txy * dir, 'green'); // 左
-            drawArrow(realCtx, 0, offset, txy * dir, offset, 'green'); // 上
-            drawArrow(realCtx, 0, -offset, -txy * dir, -offset, 'green'); // 下
+            drawArrow(realCtx, offset, 0, offset, txy, 'green');        // 右面
+            drawArrow(realCtx, -offset, 0, -offset, -txy, 'green');     // 左面
+            drawArrow(realCtx, 0, offset, txy, offset, 'green');        // 上面
+            drawArrow(realCtx, 0, -offset, -txy, -offset, 'green');     // 下面
         }
 
-        // 回転断面
+        // 回転断面の線
         const lineLen = rectSize * 0.8;
         const p1x = -lineLen * Math.sin(theta_rad), p1y = lineLen * Math.cos(theta_rad);
         const p2x = lineLen * Math.sin(theta_rad), p2y = -lineLen * Math.cos(theta_rad);
@@ -162,43 +205,47 @@
         realCtx.beginPath();
         realCtx.moveTo(X(p1x), Y(p1y));
         realCtx.lineTo(X(p2x), Y(p2y));
-        realCtx.strokeStyle = "rgba(0,0,0,0.5)";
+        realCtx.strokeStyle = "rgba(0,0,0,0.7)";
+        realCtx.lineWidth = 1.5;
         realCtx.setLineDash([5, 5]);
         realCtx.stroke();
-        realCtx.setLineDash([]); // リセット
+        realCtx.setLineDash([]);
 
-        // 回転断面上の応力矢印 (中心から)
+        // 回転断面上の応力矢印
         const nx = Math.cos(theta_rad), ny = Math.sin(theta_rad);
         const tx = -Math.sin(theta_rad), ty = Math.cos(theta_rad);
-        if (s_theta !== 0) drawArrow(realCtx, 0, 0, nx * s_theta, ny * s_theta, 'purple', 3);
-        if (t_theta !== 0) drawArrow(realCtx, 0, 0, tx * t_theta, ty * t_theta, 'orange', 3);
+        if (s_theta !== 0) drawArrow(realCtx, 0, 0, nx * s_theta, ny * s_theta, 'purple', 2.5);
+        if (t_theta !== 0) drawArrow(realCtx, 0, 0, tx * t_theta, ty * t_theta, 'orange', 2.5);
 
         // ============================
-        // モールの応力円の描画
+        // 2. モールの応力円の描画
         // ============================
-        drawGrid(mohrCtx);
+        drawGrid(mohrCtx, "σ", "τ");
 
         // 円
         mohrCtx.beginPath();
-        mohrCtx.arc(X(center_x), Y(0), radius, 0, 2 * Math.PI);
-        mohrCtx.strokeStyle = "rgba(0,0,0,0.3)";
+        mohrCtx.arc(X(center_x), Y(0), radius * scale, 0, 2 * Math.PI);
+        mohrCtx.strokeStyle = "black";
         mohrCtx.lineWidth = 2;
+        mohrCtx.fillStyle = "rgba(0,0,0,0.05)";
+        mohrCtx.fill();
         mohrCtx.stroke();
 
-        // 基準面の線と点
+        // X面・Y面を結ぶ基準線
         mohrCtx.beginPath();
         mohrCtx.moveTo(X(sx), Y(txy));
         mohrCtx.lineTo(X(sy), Y(-txy));
-        mohrCtx.strokeStyle = "rgba(0,0,0,0.3)";
+        mohrCtx.strokeStyle = "rgba(0,0,0,0.4)";
+        mohrCtx.lineWidth = 1.5;
         mohrCtx.setLineDash([5, 5]);
         mohrCtx.stroke();
         mohrCtx.setLineDash([]);
 
-        // X面(赤) と Y面(青) の点
+        // X面の点(赤) と Y面の点(青)
         mohrCtx.fillStyle = "red";
-        mohrCtx.beginPath(); mohrCtx.arc(X(sx), Y(txy), 4, 0, 2 * Math.PI); mohrCtx.fill();
+        mohrCtx.beginPath(); mohrCtx.arc(X(sx), Y(txy), 6, 0, 2 * Math.PI); mohrCtx.fill();
         mohrCtx.fillStyle = "blue";
-        mohrCtx.beginPath(); mohrCtx.arc(X(sy), Y(-txy), 4, 0, 2 * Math.PI); mohrCtx.fill();
+        mohrCtx.beginPath(); mohrCtx.arc(X(sy), Y(-txy), 6, 0, 2 * Math.PI); mohrCtx.fill();
 
         // 回転後の状態 (紫の動径と点)
         mohrCtx.beginPath();
@@ -209,10 +256,10 @@
         mohrCtx.stroke();
         
         mohrCtx.fillStyle = "purple";
-        mohrCtx.beginPath(); mohrCtx.arc(X(s_theta), Y(t_theta), 5, 0, 2 * Math.PI); mohrCtx.fill();
+        mohrCtx.beginPath(); mohrCtx.arc(X(s_theta), Y(t_theta), 7, 0, 2 * Math.PI); mohrCtx.fill();
     }
 
-    // < > ボタンの処理（整数へ丸める）
+    // ＜ ＞ ボタンの処理（Pythonの np.ceil / np.floor と完全同一）
     function stepVal(id, dir) {
         const input = document.getElementById(id);
         let val = parseFloat(input.value);
@@ -221,19 +268,17 @@
         } else {
             val = Math.ceil(val) - 1;
         }
-        // 最小値・最大値の制限
         val = Math.max(input.min, Math.min(input.max, val));
         input.value = val;
         update();
     }
 
-    // イベントリスナーの登録
+    // イベントリスナー
     ['sx', 'sy', 'txy', 'theta'].forEach(id => {
         document.getElementById(id).addEventListener('input', update);
     });
 
-    // 初期描画
-    update();
+    update(); // 初期描画
 </script>
 </body>
 </html>
